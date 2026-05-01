@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>מרכז הרגעה</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#141414;
+  --bg2:#1c1c1c;
+  --bg3:#242424;
+  --card:#1e1e1e;
+  --card2:#252525;
+  --text:#e8e4df;
+  --text2:#9e9890;
+  --text3:#5c5850;
+  --teal:#4aab8a;
+  --teal-l:rgba(74,171,138,0.12);
+  --teal-d:#2d7a61;
+  --teal-text:#7dcdb0;
+  --blue:#5a8fbf;
+  --blue-l:rgba(90,143,191,0.12);
+  --purple:#8a7ad0;
+  --purple-l:rgba(138,122,208,0.12);
+  --pink:#c06a8a;
+  --pink-l:rgba(192,106,138,0.12);
+  --amber:#c48a3a;
+  --amber-l:rgba(196,138,58,0.12);
+  --coral:#c06858;
+  --coral-l:rgba(192,104,88,0.12);
+  --gray:#706860;
+  --gray-l:rgba(112,104,96,0.12);
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.13);
+  --radius:16px;
+  --radius-sm:10px;
+  --transition-theme: background 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+body.day{
+  --bg:#f4f1ec;
+  --bg2:#ede9e2;
+  --bg3:#e6e0d8;
+  --card:#faf8f5;
+  --card2:#f2ede8;
+  --text:#2c2820;
+  --text2:#7a6f64;
+  --text3:#a89e93;
+  --teal:#2d7a61;
+  --teal-l:rgba(45,122,97,0.1);
+  --teal-d:#1e5c4a;
+  --teal-text:#1e5c4a;
+  --blue:#3a6f9a;
+  --blue-l:rgba(58,111,154,0.1);
+  --purple:#6258b0;
+  --purple-l:rgba(98,88,176,0.1);
+  --pink:#a04a6a;
+  --pink-l:rgba(160,74,106,0.1);
+  --amber:#a06820;
+  --amber-l:rgba(160,104,32,0.1);
+  --coral:#a04838;
+  --coral-l:rgba(160,72,56,0.1);
+  --gray:#5a5248;
+  --gray-l:rgba(90,82,72,0.1);
+  --border:rgba(44,40,32,0.1);
+  --border2:rgba(44,40,32,0.18);
+}
+body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-weight:400;-webkit-font-smoothing:antialiased;transition:var(--transition-theme);}
+.app{max-width:440px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;}
+.screen{display:none;flex-direction:column;flex:1;}
+.screen.active{display:flex;}
+
+/* HOME */
+.home-header{background:var(--card);padding:2rem 1.25rem 1.5rem;border-bottom:0.5px solid var(--border);text-align:center;}
+.home-logo{width:52px;height:52px;border-radius:18px;background:var(--teal-l);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;border:0.5px solid rgba(74,171,138,0.2);}
+.home-title{font-size:22px;font-weight:500;color:var(--text);margin-bottom:5px;}
+.home-sub{font-size:13px;color:var(--text2);}
+.home-body{padding:1.25rem;overflow-y:auto;flex:1;}
+.cat-label{font-size:11px;font-weight:500;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;margin:1.25rem 0 10px;}
+.cat-label:first-child{margin-top:0;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.tcard{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:1rem;cursor:pointer;min-height:105px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .12s,border-color .12s;-webkit-tap-highlight-color:transparent;}
+.tcard:active{transform:scale(.97);border-color:var(--border2);}
+.tc-icon{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.tc-name{font-size:13px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:3px;}
+.tc-dur{font-size:11px;color:var(--text3);}
+
+/* SOUND BAR */
+.sound-bar{background:var(--card);border-top:0.5px solid var(--border);padding:12px 1.25rem;display:flex;align-items:center;gap:10px;}
+.sound-label{font-size:12px;font-weight:500;color:var(--text2);flex-shrink:0;}
+.sound-btns{display:flex;gap:8px;flex:1;overflow-x:auto;}
+.sound-btns::-webkit-scrollbar{display:none;}
+.sbtn{padding:6px 12px;border-radius:20px;border:0.5px solid var(--border2);background:transparent;font-size:12px;font-family:'Heebo',sans-serif;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
+.sbtn.on{background:var(--teal-l);border-color:var(--teal-d);color:var(--teal-text);font-weight:500;}
+.vol-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.vol-wrap input[type=range]{width:60px;accent-color:var(--teal);}
+.theme-toggle{width:34px;height:34px;border-radius:50%;border:0.5px solid var(--border2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);flex-shrink:0;transition:all .2s;-webkit-tap-highlight-color:transparent;}
+.theme-toggle:active{transform:scale(.92);}
+body.day .theme-toggle{background:rgba(44,40,32,0.06);}
+body:not(.day) .theme-toggle{background:rgba(255,255,255,0.05);}
+
+/* EX SCREEN */
+.ex-screen{padding:0;}
+.ex-top{background:var(--card);padding:1rem 1.25rem 1.25rem;border-bottom:0.5px solid var(--border);}
+.back-row{display:flex;align-items:center;gap:6px;color:var(--text2);font-size:13px;cursor:pointer;margin-bottom:1.25rem;width:fit-content;-webkit-tap-highlight-color:transparent;}
+.back-row:active{opacity:.6;}
+.ex-hero{display:flex;align-items:center;gap:14px;}
+.ex-hero-icon{width:50px;height:50px;border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ex-hero-title{font-size:19px;font-weight:500;color:var(--text);}
+.ex-hero-dur{font-size:12px;color:var(--text3);margin-top:3px;}
+.ex-body{padding:1.25rem;flex:1;overflow-y:auto;}
+
+.explain-box{background:var(--bg2);border-radius:var(--radius-sm);padding:1rem 1.1rem;margin-bottom:1.25rem;font-size:13px;color:var(--text2);line-height:1.75;border:0.5px solid var(--border);}
+.explain-box b{font-weight:500;color:var(--text);}
+
+.panel{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;text-align:center;margin-bottom:1rem;}
+.panel.left{text-align:right;}
+.instr{font-size:15px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.5;}
+.hint{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:1.25rem;}
+
+.main-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--teal-d);color:#d4f0e8;font-size:15px;font-weight:500;cursor:pointer;font-family:'Heebo',sans-serif;transition:opacity .15s;margin-top:.5rem;-webkit-tap-highlight-color:transparent;}
+.main-btn:active{opacity:.82;}
+.main-btn:disabled{opacity:.3;cursor:default;}
+.done-box{background:var(--teal-l);border:0.5px solid rgba(74,171,138,0.25);border-radius:12px;padding:14px;text-align:center;font-size:14px;font-weight:500;color:var(--teal-text);margin-top:1rem;display:none;}
+
+/* BREATH */
+.b-dots{display:flex;justify-content:center;gap:8px;margin-bottom:1.25rem;}
+.b-dot{width:8px;height:8px;border-radius:50%;background:var(--border2);transition:background .3s;}
+.b-dot.on{background:var(--teal);}
+.b-phase{font-size:18px;font-weight:500;color:var(--text);margin-bottom:4px;}
+.b-info{font-size:13px;color:var(--text2);margin-bottom:1.25rem;}
+.b-ring-wrap{width:120px;height:120px;margin:0 auto 1.25rem;position:relative;}
+.b-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:24px;font-weight:400;color:var(--text);}
+
+/* DUR GRID */
+.dur-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;}
+.dur-btn{padding:10px 6px;border-radius:10px;border:0.5px solid var(--border2);background:transparent;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;font-family:'Heebo',sans-serif;transition:all .15s;text-align:center;line-height:1.4;-webkit-tap-highlight-color:transparent;}
+.dur-btn.sel{background:var(--teal-l);border-color:var(--teal-d);color:var(--teal-text);}
+.dur-btn:active{transform:scale(.97);}
+.sec-title{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:8px;text-align:right;}
+
+/* CHECKLIST */
+.checklist{display:flex;flex-direction:column;gap:9px;}
+.ci{display:flex;align-items:flex-start;gap:10px;padding:12px 13px;border:0.5px solid var(--border);border-radius:10px;cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent;}
+.ci.done{background:var(--teal-l);border-color:rgba(74,171,138,0.25);}
+.ci-box{width:20px;height:20px;border-radius:5px;border:0.5px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:white;margin-top:1px;transition:all .15s;}
+.ci.done .ci-box{background:var(--teal-d);border-color:var(--teal-d);}
+.ci-text{font-size:13px;color:var(--text2);line-height:1.5;flex:1;}
+.ci.done .ci-text{color:var(--teal-text);}
+
+/* INPUTS */
+.ta{width:100%;border:0.5px solid var(--border2);border-radius:10px;padding:10px 12px;font-size:13px;font-family:'Heebo',sans-serif;color:var(--text);background:var(--bg2);resize:vertical;min-height:90px;direction:rtl;line-height:1.65;}
+.ta:focus{outline:none;border-color:var(--teal-d);}
+.ta-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:6px;display:block;}
+.wc{font-size:11px;color:var(--text3);text-align:left;margin-top:5px;}
+.pri-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.pri-num{width:26px;height:26px;border-radius:50%;background:var(--teal-l);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--teal-text);flex-shrink:0;border:0.5px solid rgba(74,171,138,0.2);}
+input[type=text]{flex:1;height:38px;border:0.5px solid var(--border2);border-radius:9px;padding:0 10px;font-size:13px;font-family:'Heebo',sans-serif;color:var(--text);background:var(--bg2);direction:rtl;text-align:right;}
+input[type=text]:focus{outline:none;border-color:var(--teal-d);}
+.focus-timer{font-size:52px;font-weight:300;color:var(--text);letter-spacing:-.02em;margin:1rem 0;}
+
+/* RADIO */
+.radio-group{display:flex;flex-direction:column;gap:8px;margin-bottom:1.25rem;}
+.radio-opt{display:flex;align-items:center;gap:10px;padding:11px 12px;border:0.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s;text-align:right;-webkit-tap-highlight-color:transparent;}
+.radio-opt.sel{border-color:rgba(138,122,208,0.4);background:var(--purple-l);}
+.radio-dot{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.radio-opt.sel .radio-dot{border-color:var(--purple);background:var(--purple);}
+.radio-opt.sel .radio-dot::after{content:'';width:7px;height:7px;border-radius:50%;background:white;}
+.radio-text{font-size:13px;color:var(--text2);flex:1;line-height:1.4;}
+.radio-opt.sel .radio-text{color:#b0a8e0;}
+.g-num{width:52px;height:52px;border-radius:50%;background:var(--blue-l);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:500;color:var(--blue);border:0.5px solid rgba(90,143,191,0.2);}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HOME -->
+<div class="screen active" id="s-home">
+  <div class="home-header">
+    <div class="home-logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4aab8a" stroke-width="1.5"><path d="M12 4c4.418 0 8 3.582 8 8s-3.582 8-8 8-8-3.582-8-8 3.582-8 8-8z"/><path d="M8.5 13s.8 2.5 3.5 2.5 3.5-2.5 3.5-2.5M9.5 10v.01M14.5 10v.01"/></svg>
+    </div>
+    <div class="home-title">מרכז הרגעה</div>
+    <div class="home-sub">בחר כלי — תקבל הסבר ותתחיל תרגיל</div>
+  </div>
+
+  <div class="home-body">
+    <div class="cat-label">הרגעה מיידית</div>
+    <div class="grid2">
+      <div class="tcard" onclick="openEx('breath')" style="border-top:2px solid var(--teal)">
+        <div><div class="tc-icon" style="background:var(--teal-l)"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#4aab8a" stroke-width="1.5"><ellipse cx="10" cy="12" rx="5" ry="4"/><path d="M10 8V4M7 5.5C5 4 5 2 5 2M13 5.5C15 4 15 2 15 2"/></svg></div><div class="tc-name">נשימה מודרכת</div></div>
+        <div class="tc-dur">2–5 דק׳</div>
+      </div>
+      <div class="tcard" onclick="openEx('grounding')" style="border-top:2px solid var(--blue)">
+        <div><div class="tc-icon" style="background:var(--blue-l)"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#5a8fbf" stroke-width="1.5"><circle cx="10" cy="10" r="3"/><circle cx="10" cy="10" r="7"/><path d="M10 3v2M10 15v2M3 10h2M15 10h2"/></svg></div><div class="tc-name">עיגון 5-4-3-2-1</div></div>
+        <div class="tc-dur">3 דק׳</div>
+      </div>
+    </div>
+
+    <div class="cat-label">ניקוי מנטלי</div>
+    <div class="grid2">
+      <div class="tcard" onclick="openEx('dump')" style="border-top:2px solid var(--purple)">
+        <div><div class="tc-icon" style="background:var(--purple-l)"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#8a7ad0" stroke-width="1.5"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M6 9h8M6 12h5"/></svg></div><div class="tc-name">פריקת מוח</div></div>
+        <div class="tc-dur">3 דק׳</div>
+      </div>
+      <div class="tcard" onclick="openEx('name')" style="border-top:2px solid var(--pink)">
+        <div><div class="tc-icon" style="background:var(--pink-l)"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#c06a8a" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><path d="M10 9v3M10 13.5v.5"/></svg></div><div class="tc-name">תן שם לרגש</div></div>
+        <div class="tc-dur">1 דק׳</div>
+      </div>
+    </div>
+
+    <div class="cat-label">ניהול יום</div>
+    <div class="grid2">
+      <div class="tcard" onclick="openEx('priorities')" style="border-top:2px solid var(--teal)">
+        <div><div class="tc-icon" style="background:var(--teal-l)"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#4aab8a" stroke-width="1.5"><path d="M5 10l3 3 7-7"/><rect x="3" y="3" width="14" height="14" rx="2"/></svg></div><div class="tc-name">3 עדיפויות</div></div>
+        <div class="tc-dur">2 דק׳</div>
+      </div>
+      <div class="tcard" onclick="openEx('shutdown')" style="border-top:2px solid var(--amber)">
+        <div><div class="tc-icon" style="background:var(--amber-l)"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#c48a3a" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg></div><div class="tc-name">טקס סגירה</div></div>
+        <div class="tc-dur">5 דק׳</div>
+      </div>
+    </div>
+
+    <div class="cat-label">פוקוס ועשייה</div>
+    <div class="grid2">
+      <div class="tcard" onclick="openEx('focus')" style="border-top:2px solid var(--gray)">
+        <div><div class="tc-icon" style="background:var(--gray-l)"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#706860" stroke-width="1.5"><circle cx="10" cy="10" r="3"/><circle cx="10" cy="10" r="7"/></svg></div><div class="tc-name">בלוק פוקוס</div></div>
+        <div class="tc-dur">15–25 דק׳</div>
+      </div>
+      <div class="tcard" onclick="openEx('reframe')" style="border-top:2px solid var(--coral)">
+        <div><div class="tc-icon" style="background:var(--coral-l)"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#c06858" stroke-width="1.5"><path d="M4 10c0-3.314 2.686-6 6-6s6 2.686 6 6"/><path d="M4 10c0 3.314 2.686 6 6 6"/><path d="M14 13l2 3-2 1"/></svg></div><div class="tc-name">שינוי פרספקטיבה</div></div>
+        <div class="tc-dur">2 דק׳</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sound-bar">
+    <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" title="מצב יום/לילה">
+      <span id="themeIcon">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="4"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.93 4.93l1.41 1.41M13.66 13.66l1.41 1.41M4.93 15.07l1.41-1.41M13.66 6.34l1.41-1.41"/></svg>
+      </span>
+    </button>
+    <div class="sound-btns">
+      <button class="sbtn" onclick="toggleSound('handpan',this)">הנדפן</button>
+      <button class="sbtn" onclick="toggleSound('rain',this)">גשם</button>
+      <button class="sbtn" onclick="toggleSound('ocean',this)">גלים</button>
+      <button class="sbtn" onclick="toggleSound('white',this)">רחש לבן</button>
+      <button class="sbtn" onclick="toggleSound('forest',this)">יער</button>
+    </div>
+    <div class="vol-wrap">
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="var(--text3)" stroke-width="1.5"><path d="M3 8v4h3l4 4V4L6 8H3z"/><path d="M14 6.5a5 5 0 0 1 0 7"/></svg>
+      <input type="range" min="0" max="100" value="40" oninput="setVolume(this.value)">
+    </div>
+  </div>
+</div>
+
+<!-- EX SCREEN -->
+<div class="screen ex-screen" id="s-ex">
+  <div class="ex-top">
+    <div class="back-row" onclick="goHome()">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4l-6 6 6 6"/></svg>
+      חזרה
+    </div>
+    <div class="ex-hero">
+      <div class="ex-hero-icon" id="exIcon"></div>
+      <div>
+        <div class="ex-hero-title" id="exTitle"></div>
+        <div class="ex-hero-dur" id="exDur"></div>
+      </div>
+    </div>
+  </div>
+  <div class="ex-body">
+    <div class="explain-box" id="exExplain"></div>
+    <div id="exBody"></div>
+    <div class="done-box" id="doneBanner">כל הכבוד — סיימת את התרגיל</div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ── AUDIO ──
+var actx=null,soundNodes={},currentSound=null,masterGain=null,volVal=0.4;
+
+function initAudio(){
+  if(actx)return actx;
+  actx=new(window.AudioContext||window.webkitAudioContext)();
+  masterGain=actx.createGain();
+  masterGain.gain.value=volVal;
+  masterGain.connect(actx.destination);
+  // iOS silent buffer unlock
+  var buf=actx.createBuffer(1,1,actx.sampleRate);
+  var src=actx.createBufferSource();
+  src.buffer=buf;src.connect(actx.destination);
+  src.start(0);
+  return actx;
+}
+
+function getCtx(){return actx;}
+
+function setVolume(v){
+  volVal=v/100;
+  if(masterGain)masterGain.gain.setTargetAtTime(volVal,actx.currentTime,0.05);
+}
+
+// HANDPAN — pentatonic scale notes with resonant decay
+function makeHandpan(ctx){
+  var scale=[261.63,293.66,329.63,392.00,440.00,523.25,587.33,659.25,783.99];
+  var g=ctx.createGain();g.gain.value=0;g.connect(masterGain);
+  var running=true;
+  var reverb=ctx.createConvolver();
+  var rbLen=ctx.sampleRate*2.5;
+  var rbBuf=ctx.createBuffer(2,rbLen,ctx.sampleRate);
+  for(var c=0;c<2;c++){var d=rbBuf.getChannelData(c);for(var i=0;i<rbLen;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/rbLen,2);}
+  reverb.buffer=rbBuf;
+  var rvG=ctx.createGain();rvG.gain.value=0.45;
+  reverb.connect(rvG);rvG.connect(masterGain);
+
+  function playNote(){
+    if(!running)return;
+    var now=ctx.currentTime;
+    var freq=scale[Math.floor(Math.random()*scale.length)];
+    var osc=ctx.createOscillator();osc.type='sine';osc.frequency.value=freq;
+    var osc2=ctx.createOscillator();osc2.type='sine';osc2.frequency.value=freq*2.756;
+    var env=ctx.createGain();env.gain.setValueAtTime(0,now);
+    env.gain.linearRampToValueAtTime(0.18,now+0.01);
+    env.gain.exponentialRampToValueAtTime(0.001,now+3.5);
+    var env2=ctx.createGain();env2.gain.setValueAtTime(0,now);
+    env2.gain.linearRampToValueAtTime(0.06,now+0.01);
+    env2.gain.exponentialRampToValueAtTime(0.001,now+1.8);
+    osc.connect(env);osc2.connect(env2);
+    env.connect(masterGain);env.connect(reverb);
+    env2.connect(masterGain);env2.connect(reverb);
+    osc.start(now);osc2.start(now);
+    osc.stop(now+4);osc2.stop(now+2.5);
+    var next=1800+Math.random()*3200;
+    setTimeout(function(){if(running)playNote();},next);
+  }
+  playNote();
+  setTimeout(function(){if(running)playNote();},900);
+  setTimeout(function(){if(running)playNote();},1800);
+  return{g,reverb,rvG,stop:function(){running=false;}};
+}
+
+function makeRain(ctx){
+  var bufLen=ctx.sampleRate*4,buf=ctx.createBuffer(1,bufLen,ctx.sampleRate),data=buf.getChannelData(0);
+  for(var i=0;i<bufLen;i++)data[i]=Math.random()*2-1;
+  var src=ctx.createBufferSource();src.buffer=buf;src.loop=true;
+  var bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=2500;bp.Q.value=0.5;
+  var hi=ctx.createBiquadFilter();hi.type='highshelf';hi.frequency.value=8000;hi.gain.value=-10;
+  var g=ctx.createGain();g.gain.value=0.32;
+  src.connect(bp);bp.connect(hi);hi.connect(g);g.connect(masterGain);src.start();
+  return{src,g};
+}
+
+function makeOcean(ctx){
+  var bufLen=ctx.sampleRate*8,buf=ctx.createBuffer(2,bufLen,ctx.sampleRate);
+  for(var c=0;c<2;c++){var d=buf.getChannelData(c);for(var i=0;i<bufLen;i++)d[i]=Math.random()*2-1;}
+  var src=ctx.createBufferSource();src.buffer=buf;src.loop=true;
+  var lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=800;
+  var lfo=ctx.createOscillator();lfo.frequency.value=0.08;
+  var lfoG=ctx.createGain();lfoG.gain.value=0.22;
+  var g=ctx.createGain();g.gain.value=0.48;
+  lfo.connect(lfoG);lfoG.connect(g.gain);
+  src.connect(lp);lp.connect(g);g.connect(masterGain);
+  lfo.start();src.start();
+  return{src,g,lfo};
+}
+
+function makeWhite(ctx){
+  var bufLen=ctx.sampleRate*2,buf=ctx.createBuffer(1,bufLen,ctx.sampleRate),data=buf.getChannelData(0);
+  for(var i=0;i<bufLen;i++)data[i]=Math.random()*2-1;
+  var src=ctx.createBufferSource();src.buffer=buf;src.loop=true;
+  var lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=3000;
+  var g=ctx.createGain();g.gain.value=0.25;
+  src.connect(lp);lp.connect(g);g.connect(masterGain);src.start();
+  return{src,g};
+}
+
+function makeForest(ctx){
+  var bufLen=ctx.sampleRate*4,buf=ctx.createBuffer(1,bufLen,ctx.sampleRate),data=buf.getChannelData(0);
+  for(var i=0;i<bufLen;i++)data[i]=Math.random()*2-1;
+  var src=ctx.createBufferSource();src.buffer=buf;src.loop=true;
+  var bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=600;bp.Q.value=0.3;
+  var g=ctx.createGain();g.gain.value=0.16;
+  var birds=[];
+  var running=true;
+  [880,1320,1760].forEach(function(freq,idx){
+    var osc=ctx.createOscillator();osc.type='sine';osc.frequency.value=freq;
+    var envG=ctx.createGain();envG.gain.value=0;
+    osc.connect(envG);envG.connect(masterGain);
+    function chirp(delay){setTimeout(function(){
+      if(!running)return;
+      var now=ctx.currentTime;
+      envG.gain.setValueAtTime(0.035,now);
+      envG.gain.setTargetAtTime(0,now+0.35,0.08);
+      chirp(1800+Math.random()*3500);
+    },delay);}
+    chirp(400+idx*700);
+    osc.start();
+    birds.push({osc,envG});
+  });
+  src.connect(bp);bp.connect(g);g.connect(masterGain);src.start();
+  return{src,g,birds,stop:function(){running=false;}};
+}
+
+var MAKERS={handpan:makeHandpan,rain:makeRain,ocean:makeOcean,white:makeWhite,forest:makeForest};
+
+// ── THEME ──
+var isDay=false;
+function toggleTheme(){
+  isDay=!isDay;
+  document.body.classList.toggle('day',isDay);
+  var icon=document.getElementById('themeIcon');
+  if(icon){
+    icon.innerHTML=isDay
+      ?'<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17.293 13.293A8 8 0 0 1 6.707 2.707a8.001 8.001 0 1 0 10.586 10.586z"/></svg>'
+      :'<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="4"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.93 4.93l1.41 1.41M13.66 13.66l1.41 1.41M4.93 15.07l1.41-1.41M13.66 6.34l1.41-1.41"/></svg>';
+  }
+}
+
+function stopCurrent(){
+  if(currentSound&&soundNodes[currentSound]){
+    var n=soundNodes[currentSound];
+    try{
+      if(n.stop)n.stop();
+      if(n.g){n.g.gain.setTargetAtTime(0,getCtx().currentTime,0.3);}
+      if(n.src)setTimeout(function(){try{n.src.stop();}catch(e){}},700);
+      if(n.lfo)setTimeout(function(){try{n.lfo.stop();}catch(e){}},700);
+      if(n.birds)n.birds.forEach(function(b){setTimeout(function(){try{b.osc.stop();}catch(e){}},700);});
+      if(n.rvG){n.rvG.gain.setTargetAtTime(0,getCtx().currentTime,0.3);}
+    }catch(e){}
+    soundNodes[currentSound]=null;
+  }
+}
+
+function toggleSound(name,btn){
+  document.querySelectorAll('.sbtn').forEach(function(b){b.classList.remove('on');});
+  if(currentSound===name){stopCurrent();currentSound=null;return;}
+  stopCurrent();
+  var ctx=initAudio();
+  if(ctx.state==='suspended'){
+    ctx.resume().then(function(){
+      soundNodes[name]=MAKERS[name](ctx);
+      currentSound=name;btn.classList.add('on');
+    });
+  } else {
+    soundNodes[name]=MAKERS[name](ctx);
+    currentSound=name;btn.classList.add('on');
+  }
+}
+
+// ── EXERCISES ──
+var bInt=null,bRunning=false,fInt=null,fRunning=false;
+var fSecs=0,fDur=25,bRounds=4,bSecs=4,shutDone=0,groundStep=0;
+
+var EX={
+  breath:{title:'נשימה מודרכת',dur:'2–5 דקות',iconBg:'var(--teal-l)',iconStroke:'#4aab8a',
+    explain:'<b>למה זה עובד:</b> נשימת קופסה מפעילה את מערכת העצבים הפאראסימפתטית. היא מאותתת למוח שהסכנה עברה, מורידה קורטיזול ומרגיעה את הגוף תוך דקות — מתאימה ללחץ מכל מקור.',type:'breath'},
+  grounding:{title:'עיגון 5-4-3-2-1',dur:'3 דקות · חזרה להווה',iconBg:'var(--blue-l)',iconStroke:'#5a8fbf',
+    explain:'<b>למה זה עובד:</b> כשמחשבות מציפות אותנו אנחנו נעלמים לתוך הראש. תרגיל העיגון מפנה את תשומת הלב לחושים — לגוף ולסביבה — ומפסיק את ספירלת החרדה בצורה מידית.',type:'grounding'},
+  dump:{title:'פריקת מוח',dur:'3 דקות · כתיבה חופשית',iconBg:'var(--purple-l)',iconStroke:'#8a7ad0',
+    explain:'<b>למה זה עובד:</b> המוח לא מיועד להחזיק עשרות דברים פתוחים. כל מחשבה שמועמסת עליו יוצרת מתח רקע. כתיבה חיצונית מפנה את ה-RAM ומאפשרת לנשום.',type:'dump'},
+  name:{title:'תן שם לרגש',dur:'דקה · בהירות רגשית',iconBg:'var(--pink-l)',iconStroke:'#c06a8a',
+    explain:'<b>למה זה עובד:</b> תיוג מדויק של רגש מפחית את פעילות האמיגדלה. ״אני מרגיש הצפה כי...״ מחזיר תחושת שליטה מהר יותר מסתם ״אני לחוץ״.',type:'name'},
+  priorities:{title:'3 עדיפויות יומיות',dur:'2 דקות · פוקוס יומי',iconBg:'var(--teal-l)',iconStroke:'#4aab8a',
+    explain:'<b>למה זה עובד:</b> רשימות ארוכות מייצרות תחושת מוצף. הגבלה ל-3 דברים בלבד מכריחה אותך לסדר עדיפויות ויוצרת תחושת השלמה בסוף היום.',type:'priorities'},
+  shutdown:{title:'טקס סגירת יום',dur:'5 דקות · שגרת סיום',iconBg:'var(--amber-l)',iconStroke:'#c48a3a',
+    explain:'<b>למה זה עובד:</b> ללא סגירה מכוונת המוח ממשיך לעבד את היום גם בערב. טקס קבוע מאותת ״עבודה הסתיימה״ — מה שמאפשר שחרור מנטלי ושינה טובה יותר.',type:'shutdown'},
+  focus:{title:'בלוק פוקוס',dur:'15–25 דקות · עבודה עמוקה',iconBg:'var(--gray-l)',iconStroke:'#706860',
+    explain:'<b>למה זה עובד:</b> נדרשות כ-23 דקות להחזיר ריכוז לאחר הפרעה. בלוקים מוגנים מהודעות מאפשרים עבודה משמעותית ומפחיתים עומס תפעולי.',type:'focus'},
+  reframe:{title:'שינוי פרספקטיבה',dur:'2 דקות · מחשבה מחדש',iconBg:'var(--coral-l)',iconStroke:'#c06858',
+    explain:'<b>למה זה עובד:</b> לחץ נוצר לא רק מהמצב אלא מהאופן שבו אנחנו מפרשים אותו. שאלות מכוונות עוזרות לראות את הסיטואציה אחרת ולהפחית את עוצמת הרגש.',type:'reframe'}
+};
+
+function openEx(key){
+  var e=EX[key];
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('s-ex').classList.add('active');
+  document.getElementById('exTitle').textContent=e.title;
+  document.getElementById('exDur').textContent=e.dur;
+  document.getElementById('exExplain').innerHTML=e.explain;
+  document.getElementById('doneBanner').style.display='none';
+  var icon=document.getElementById('exIcon');
+  icon.style.background=e.iconBg;
+  icon.innerHTML='<svg width="26" height="26" viewBox="0 0 20 20" fill="none" stroke="'+e.iconStroke+'" stroke-width="1.5"><circle cx="10" cy="10" r="7"/></svg>';
+  clearInterval(bInt);clearInterval(fInt);
+  bRunning=false;fRunning=false;fSecs=0;shutDone=0;groundStep=0;bRounds=4;bSecs=4;
+  buildEx(e.type);
+}
+
+function goHome(){
+  clearInterval(bInt);clearInterval(fInt);bRunning=false;fRunning=false;
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('s-home').classList.add('active');
+}
+
+function doneEx(){document.getElementById('doneBanner').style.display='block';}
+
+function buildEx(type){
+  var b=document.getElementById('exBody');
+  if(type==='breath'){
+    b.innerHTML=
+      '<div class="panel">'+
+        '<div class="sec-title">כמה זמן לנשום?</div>'+
+        '<div class="dur-grid">'+
+          '<button class="dur-btn sel" id="br-2" onclick="setBR(2,this)">2 דק׳ · 4 סבבים</button>'+
+          '<button class="dur-btn" id="br-3" onclick="setBR(3,this)">3 דק׳ · 6 סבבים</button>'+
+          '<button class="dur-btn" id="br-4" onclick="setBR(4,this)">5 דק׳ · 8 סבבים</button>'+
+          '<button class="dur-btn" id="br-0" onclick="setBR(0,this)">קצב חופשי</button>'+
+        '</div>'+
+        '<div class="sec-title" style="margin-top:.5rem">כמה שניות לכל שלב?</div>'+
+        '<div class="dur-grid">'+
+          '<button class="dur-btn sel" id="bs-4" onclick="setBS(4,this)">4 שניות</button>'+
+          '<button class="dur-btn" id="bs-5" onclick="setBS(5,this)">5 שניות</button>'+
+          '<button class="dur-btn" id="bs-6" onclick="setBS(6,this)">6 שניות</button>'+
+          '<button class="dur-btn" id="bs-8" onclick="setBS(8,this)">8 שניות</button>'+
+        '</div>'+
+      '</div>'+
+      '<div class="panel" id="bRunPanel" style="display:none">'+
+        '<div class="b-dots" id="bDots"></div>'+
+        '<div class="b-phase" id="bPhase">מוכן?</div>'+
+        '<div class="b-info" id="bInfo"></div>'+
+        '<div class="b-ring-wrap">'+
+          '<svg viewBox="0 0 120 120" width="120" height="120" style="transform:rotate(-90deg)">'+
+            '<circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"/>'+
+            '<circle cx="60" cy="60" r="50" fill="none" stroke="#4aab8a" stroke-width="6" stroke-dasharray="314" stroke-dashoffset="314" id="bRing" style="transition:stroke-dashoffset .15s linear"/>'+
+          '</svg>'+
+          '<div class="b-num" id="bNum">—</div>'+
+        '</div>'+
+      '</div>'+
+      '<button class="main-btn" id="bBtn" onclick="toggleBreath()">התחל</button>';
+    updateBInfo();
+  } else if(type==='grounding'){
+    buildGrounding();
+  } else if(type==='dump'){
+    b.innerHTML='<div class="panel left"><div class="instr">שפוך הכל — בלי לערוך</div><div class="hint">כתוב כל מה שמטריד אותך. משימות, חששות, מחשבות פתוחות. אין צורך בסדר.</div><textarea class="ta" id="dumpT" placeholder="מה מעסיק אותך עכשיו?..." oninput="chkDump()"></textarea><div class="wc" id="dumpWc">0 מילים</div></div><button class="main-btn" id="dumpBtn" onclick="doneEx()" disabled>סיימתי לפרוק</button>';
+  } else if(type==='name'){
+    b.innerHTML='<div class="panel left"><div class="instr">תאר בדיוק מה אתה מרגיש</div><div class="hint">נסה להיות ספציפי — לא ״לחוץ״ אלא ״אני מרגיש... כי...״</div><label class="ta-label">אני מרגיש...</label><textarea class="ta" id="n1" placeholder="תאר את הרגש..." oninput="chkName()" style="min-height:70px"></textarea><label class="ta-label" style="margin-top:10px">מה בשליטתי עכשיו?</label><textarea class="ta" id="n2" placeholder="פעולה אחת שאני יכול לעשות..." oninput="chkName()" style="min-height:60px"></textarea></div><button class="main-btn" id="nameBtn" onclick="doneEx()" disabled>סיימתי</button>';
+  } else if(type==='priorities'){
+    b.innerHTML='<div class="panel left"><div class="instr">מה 3 הדברים החשובים היום?</div><div class="hint">רק 3. הכל השאר — שניוני.</div><div class="pri-row"><div class="pri-num">1</div><input type="text" placeholder="עדיפות ראשונה..." id="p1" oninput="chkPri()"/></div><div class="pri-row"><div class="pri-num">2</div><input type="text" placeholder="עדיפות שנייה..." id="p2" oninput="chkPri()"/></div><div class="pri-row"><div class="pri-num">3</div><input type="text" placeholder="עדיפות שלישית..." id="p3" oninput="chkPri()"/></div></div><button class="main-btn" id="priBtn" onclick="doneEx()" disabled>שמרתי את העדיפויות</button>';
+  } else if(type==='shutdown'){
+    var items=['עברתי על מה שעשיתי היום','כתבתי 3 עדיפויות למחר','פניתי שולחן עבודה ומסך','נסגרתי על כל המשימות הפתוחות','אמרתי לעצמי: היום הסתיים'];
+    b.innerHTML='<div class="checklist">'+items.map(function(t,i){return'<div class="ci" onclick="togShut(this,'+i+')" id="ci'+i+'"><div class="ci-box" id="cb'+i+'"></div><div class="ci-text">'+t+'</div></div>';}).join('')+'</div>';
+  } else if(type==='focus'){
+    b.innerHTML='<div class="panel"><div class="instr" id="fInstr">בחר משך</div><div class="dur-grid"><button class="dur-btn" onclick="setFDur(15,this)">15 דק׳</button><button class="dur-btn" onclick="setFDur(25,this)">25 דק׳</button></div><input type="text" id="fTask" placeholder="המשימה לבלוק הזה..." style="direction:rtl;text-align:right;display:none;width:100%;margin-top:.5rem"><div class="focus-timer" id="fTimer" style="display:none">25:00</div></div><button class="main-btn" id="fBtn" onclick="toggleFocus()" style="display:none">התחל</button>';
+  } else if(type==='reframe'){
+    var qs=['מה הכי גרוע שיכול לקרות? עד כמה זה ריאלי?','האם אני אדאג לזה בעוד שנה? חמש שנים?','מה הייתי אומר לחבר טוב שנמצא במצבי?','מה אני יכול ללמוד מהמצב הזה?'];
+    b.innerHTML='<div class="radio-group">'+qs.map(function(q,i){return'<div class="radio-opt" onclick="selQ(this)" id="rq'+i+'"><div class="radio-dot"></div><div class="radio-text">'+q+'</div></div>';}).join('')+'</div><div style="display:none" id="rbox"><label class="ta-label">התשובה שלי:</label><textarea class="ta" id="rans" placeholder="כתוב את מחשבותיך..." oninput="chkReframe()"></textarea></div><button class="main-btn" id="rfBtn" onclick="doneEx()" style="display:none" disabled>סיימתי</button>';
+  }
+}
+
+function setBR(v,btn){bRounds=v;document.querySelectorAll('[id^="br-"]').forEach(function(b){b.classList.remove('sel');});btn.classList.add('sel');updateBInfo();}
+function setBS(v,btn){bSecs=v;document.querySelectorAll('[id^="bs-"]').forEach(function(b){b.classList.remove('sel');});btn.classList.add('sel');updateBInfo();}
+function updateBInfo(){
+  var p=document.getElementById('bRunPanel');if(!p)return;
+  var di=document.getElementById('bDots');if(!di)return;
+  di.innerHTML=bRounds>0?Array.from({length:bRounds},function(_,i){return'<div class="b-dot" id="bd'+i+'"></div>';}).join(''):'';
+  var bi=document.getElementById('bInfo');
+  if(bi)bi.textContent=bRounds===0?'קצב חופשי — עצור מתי שתרצה':(bRounds+' סבבים · כ-'+Math.round(bRounds*4*bSecs/60)+' דקות');
+}
+function toggleBreath(){
+  if(bRunning){clearInterval(bInt);bRunning=false;var btn=document.getElementById('bBtn');if(btn)btn.textContent='המשך';return;}
+  bRunning=true;
+  document.getElementById('bBtn').textContent='עצור';
+  document.getElementById('bRunPanel').style.display='block';
+  var phases=[{h:'שאיפה',s:bSecs},{h:'עצירה',s:bSecs},{h:'נשיפה',s:bSecs},{h:'עצירה',s:bSecs}];
+  var round=0,pi=0,left=bSecs,total=bSecs,circ=314;
+  function tick(){
+    var ph=document.getElementById('bPhase');if(ph)ph.textContent=phases[pi].h;
+    var nm=document.getElementById('bNum');if(nm)nm.textContent=left;
+    if(bRounds>0){var ri=document.getElementById('bInfo');if(ri)ri.textContent='סבב '+(round+1)+' מתוך '+bRounds;}
+    var ring=document.getElementById('bRing');if(ring)ring.style.strokeDashoffset=Math.round(circ-circ*((total-left)/total));
+    if(bRounds>0){for(var i=0;i<bRounds;i++){var d=document.getElementById('bd'+i);if(d)d.className='b-dot'+(i<=round?' on':'');}}
+    left--;
+    if(left<0){
+      pi++;if(pi>=4){pi=0;round++;}
+      if(bRounds>0&&round>=bRounds){
+        clearInterval(bInt);bRunning=false;
+        var ph2=document.getElementById('bPhase');if(ph2)ph2.textContent='מצוין!';
+        var nm2=document.getElementById('bNum');if(nm2)nm2.textContent='';
+        var ri2=document.getElementById('bInfo');if(ri2)ri2.textContent=bRounds+' סבבים הושלמו';
+        var btn2=document.getElementById('bBtn');if(btn2)btn2.textContent='שוב';
+        var rg2=document.getElementById('bRing');if(rg2)rg2.style.strokeDashoffset=0;
+        for(var i=0;i<bRounds;i++){var d2=document.getElementById('bd'+i);if(d2)d2.className='b-dot on';}
+        doneEx();return;
+      }
+      left=phases[pi].s;total=phases[pi].s;
+    }
+  }
+  tick();bInt=setInterval(tick,1000);
+}
+
+var gSteps=[
+  {n:'5',q:'מצא 5 דברים שאתה <b>רואה</b> עכשיו',ph:'למשל: שולחן, חלון, ידי...'},
+  {n:'4',q:'מצא 4 דברים שאתה <b>שומע</b> עכשיו',ph:'למשל: רחש, דממה, קול מרחוק...'},
+  {n:'3',q:'מצא 3 דברים שאתה <b>מרגיש במגע</b>',ph:'למשל: הכיסא, הבגד, האוויר...'},
+  {n:'2',q:'מצא 2 דברים שאתה <b>מריח</b>',ph:'אם לא, שאפת אוויר — מה הוא מרגיש?'},
+  {n:'1',q:'מצא <b>טעם אחד</b> בפה שלך',ph:'כל תשובה תקינה...'}
+];
+function buildGrounding(){
+  groundStep=0;var s=gSteps[0];
+  document.getElementById('exBody').innerHTML=
+    '<div class="panel left"><div class="g-num" id="gNum">'+s.n+'</div><div class="instr" id="gQ">'+s.q+'</div><div class="hint" id="gH">'+s.ph+'</div><textarea class="ta" id="gT" placeholder="רשום כאן..."></textarea></div>'+
+    '<button class="main-btn" id="gBtn" onclick="nextGround()">הבא · <span id="gStep">1/5</span></button>';
+}
+function nextGround(){
+  groundStep++;
+  if(groundStep>=5){doneEx();var btn=document.getElementById('gBtn');if(btn){btn.textContent='סיימתי';btn.disabled=true;}return;}
+  var s=gSteps[groundStep];
+  var gn=document.getElementById('gNum');if(gn)gn.textContent=s.n;
+  var gq=document.getElementById('gQ');if(gq)gq.innerHTML=s.q;
+  var gh=document.getElementById('gH');if(gh)gh.textContent=s.ph;
+  var gt=document.getElementById('gT');if(gt)gt.value='';
+  var gs=document.getElementById('gStep');if(gs)gs.textContent=(groundStep+1)+'/5';
+  if(groundStep===4){var btn=document.getElementById('gBtn');if(btn)btn.textContent='סיים';}
+}
+function chkDump(){
+  var t=document.getElementById('dumpT');if(!t)return;
+  var w=t.value.trim()?t.value.trim().split(/\s+/).length:0;
+  var wc=document.getElementById('dumpWc');if(wc)wc.textContent=w+' מילים';
+  var btn=document.getElementById('dumpBtn');if(btn)btn.disabled=w<5;
+}
+function chkName(){
+  var a=document.getElementById('n1'),b2=document.getElementById('n2');
+  var ok=a&&b2&&a.value.trim().length>4&&b2.value.trim().length>3;
+  var btn=document.getElementById('nameBtn');if(btn)btn.disabled=!ok;
+}
+function chkPri(){
+  var ok=[1,2,3].every(function(i){var e=document.getElementById('p'+i);return e&&e.value.trim().length>1;});
+  var btn=document.getElementById('priBtn');if(btn)btn.disabled=!ok;
+}
+function togShut(el,i){
+  var was=el.classList.contains('done');el.classList.toggle('done');
+  var cb=document.getElementById('cb'+i);if(cb)cb.textContent=was?'':'✓';
+  shutDone+=was?-1:1;if(shutDone>=5)doneEx();
+}
+function setFDur(m,btn){
+  fDur=m;fSecs=0;
+  document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+  var ft=document.getElementById('fTimer');if(ft){ft.style.display='block';ft.textContent=(m<10?'0':'')+m+':00';}
+  var task=document.getElementById('fTask');if(task)task.style.display='block';
+  var fbtn=document.getElementById('fBtn');if(fbtn)fbtn.style.display='block';
+  var fi=document.getElementById('fInstr');if(fi)fi.textContent='מה תעשה בבלוק הזה?';
+}
+function toggleFocus(){
+  if(fRunning){clearInterval(fInt);fRunning=false;var btn=document.getElementById('fBtn');if(btn)btn.textContent='המשך';return;}
+  fRunning=true;if(!fSecs)fSecs=fDur*60;
+  var btn=document.getElementById('fBtn');if(btn)btn.textContent='השהה';
+  fInt=setInterval(function(){
+    fSecs--;
+    if(fSecs<=0){clearInterval(fInt);fRunning=false;var ft=document.getElementById('fTimer');if(ft)ft.textContent='00:00';doneEx();return;}
+    var m=Math.floor(fSecs/60),s=fSecs%60;
+    var ft=document.getElementById('fTimer');if(ft)ft.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  },1000);
+}
+function selQ(el){
+  document.querySelectorAll('.radio-opt').forEach(function(r){r.classList.remove('sel');});
+  el.classList.add('sel');
+  var rb=document.getElementById('rbox');if(rb)rb.style.display='block';
+  var rfbtn=document.getElementById('rfBtn');if(rfbtn)rfbtn.style.display='block';
+  var ans=document.getElementById('rans');if(ans)ans.value='';
+}
+function chkReframe(){
+  var a=document.getElementById('rans');
+  var ok=a&&a.value.trim().length>10;
+  var btn=document.getElementById('rfBtn');if(btn)btn.disabled=!ok;
+}
+</script>
+</body>
+</html>
